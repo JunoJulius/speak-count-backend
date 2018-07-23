@@ -1,7 +1,8 @@
 {
-  "name": "backend",
+  "name": "speak-count-backend",
   "version": "1.0.0",
   "main": "./target/index.js",
+  "repository": "git@github.com:joseMesaS/speak-count-backend.git",
   "license": "MIT",
   "scripts": {
     "start": "nodemon .",
