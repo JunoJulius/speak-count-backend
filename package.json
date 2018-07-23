@@ -1,0 +1,8 @@
+{
+  "name": "speak-count-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:joseMesaS/speak-count-backend.git",
+  "author": "Jose Mesa <jose.mesa.solorzano@gmail.com>",
+  "license": "MIT"
+}
