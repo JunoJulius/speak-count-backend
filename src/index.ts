@@ -21,7 +21,9 @@ useKoaServer(app, {
   ]
 })
 
-
+io.on('connect', (socket) => {
+  console.log('connection made , socket id --->', socket.id);
+});
 // io.on('connect', socket => {
 //   const name = socket.request.user.firstName
 //   console.log(`User ${name} just connected`)

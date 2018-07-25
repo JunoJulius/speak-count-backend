@@ -19,6 +19,9 @@ routing_controllers_1.useKoaServer(app, {
         controller_2.default
     ]
 });
+exports.io.on('connect', (socket) => {
+    console.log('connection made , socket id --->', socket.id);
+});
 db_1.default()
     .then(_ => {
     server.listen(port);

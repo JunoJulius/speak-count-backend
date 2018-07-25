@@ -54,10 +54,7 @@ export default class TurnsController {
             const updatedParticipant = await participant.save()
 
 
-            io.emit('action', {
-                type: 'UPDATE_PARTICIPANT',
-                payload: updatedParticipant
-            })
+            io.emit('UPDATE_PARTICIPANT', updatedParticipant)
 
             
             return newTurn

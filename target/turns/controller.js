@@ -56,10 +56,7 @@ let TurnsController = class TurnsController {
             participant.numberOfPieces = Math.trunc(participant.timeSpeakingSeconds / session.timePerPiece);
         }
         const updatedParticipant = await participant.save();
-        index_1.io.emit('action', {
-            type: 'UPDATE_PARTICIPANT',
-            payload: updatedParticipant
-        });
+        index_1.io.emit('UPDATE_PARTICIPANT', updatedParticipant);
         return newTurn;
     }
 };

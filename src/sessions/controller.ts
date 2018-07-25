@@ -59,10 +59,7 @@ export default class SessionsController {
         await participant.save()
 
 
-        io.emit('action', {
-            type: 'UPDATE_SESSION',
-            payload: updatedSession
-        })
+        io.emit( 'UPDATE_SESSION', updatedSession )
 
         const newParticipant = await Participant.query(`select * from participants where id=${participant.id}`)
 
@@ -83,10 +80,7 @@ export default class SessionsController {
         const updatedSession = session.save()
 
 
-        io.emit('action', {
-            type: 'UPDATE_SESSION',
-            payload: updatedSession
-        })
+        io.emit( 'UPDATE_SESSION', updatedSession )
 
         return updatedSession
     }

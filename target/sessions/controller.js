@@ -49,10 +49,7 @@ let SessionsController = class SessionsController {
         const participant = await entity_1.Participant.create();
         participant.session = updatedSession;
         await participant.save();
-        index_1.io.emit('action', {
-            type: 'UPDATE_SESSION',
-            payload: updatedSession
-        });
+        index_1.io.emit('UPDATE_SESSION', updatedSession);
         const newParticipant = await entity_1.Participant.query(`select * from participants where id=${participant.id}`);
         return newParticipant;
     }
@@ -62,10 +59,7 @@ let SessionsController = class SessionsController {
             throw new routing_controllers_1.NotFoundError('Session not found!');
         session.status = 'finished';
         const updatedSession = session.save();
-        index_1.io.emit('action', {
-            type: 'UPDATE_SESSION',
-            payload: updatedSession
-        });
+        index_1.io.emit('UPDATE_SESSION', updatedSession);
         return updatedSession;
     }
 };
