@@ -22,6 +22,7 @@ let SessionsController = class SessionsController {
     }
     async getSession(id) {
         const session = await entity_1.Session.query(`select * from sessions where id=${id}`);
+        index_1.io.emit('UPDATE_SESSION', session);
         return session;
     }
     async createSession(session) {

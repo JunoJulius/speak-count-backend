@@ -17,7 +17,8 @@ export default class SessionsController {
     async getSession(
       @Param('id') id: number
     ) {
-        const session = await Session.query(`select * from sessions where id=${id}`)  
+        const session = await Session.query(`select * from sessions where id=${id}`)
+        io.emit( 'UPDATE_SESSION', session )  
         return session
     }
 
