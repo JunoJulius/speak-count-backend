@@ -36,9 +36,9 @@ export default class SessionsController {
          0 : (entity.stimatedTime * 0.4) / (entity.numberOfParticipants * 5)
         
         const newSession = await Session.create(entity).save()
-        
+        const [payload] =await Session.query(`select * from sessions where id=${newSession.id}`)
 
-        return newSession
+        return payload
     }
 
     @Post('/join')
@@ -59,8 +59,9 @@ export default class SessionsController {
         participant.session = updatedSession
         await participant.save()
 
+        const [payload] =await Session.query(`select * from sessions where id=${updatedSession.id}`)
 
-        io.emit( 'UPDATE_SESSION', updatedSession )
+        io.emit( 'UPDATE_SESSION', payload )
 
         const newParticipant = await Participant.query(`select * from participants where id=${participant.id}`)
 
@@ -78,12 +79,13 @@ export default class SessionsController {
         const session = await Session.findOne(id)
         if(!session) throw new NotFoundError('Session not found!')
         session.status = 'finished'
-        const updatedSession = session.save()
+        const updatedSession = await session.save()
 
+        const [payload] = await Session.query(`select * from sessions where id=${updatedSession.id}`)
 
-        io.emit( 'UPDATE_SESSION', updatedSession )
+        io.emit( 'UPDATE_SESSION', payload )
 
-        return updatedSession
+        return payload
     }
 
     // @Authorized(['admin'])
