@@ -53,7 +53,7 @@ let TurnsController = class TurnsController {
         const timeSpoken = Math.round((new Date(endTime).getTime() - new Date(startTime).getTime()) / 1000);
         participant.timeSpeakingSeconds = participant.timeSpeakingSeconds + timeSpoken;
         if (participant.timeSpeakingSeconds > session.timePerPiece && participant.timeSpeakingSeconds <= 5 * session.timePerPiece) {
-            participant.numberOfPieces = Math.trunc(participant.timeSpeakingSeconds / session.timePerPiece);
+            participant.numberOfPieces = 5 - Math.trunc(participant.timeSpeakingSeconds / session.timePerPiece);
         }
         const updatedParticipant = await participant.save();
         const [payload] = await entity_1.Participant.query(`select * from participants where id=${updatedParticipant.id}`);
