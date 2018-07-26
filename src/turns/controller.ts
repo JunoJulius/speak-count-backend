@@ -53,7 +53,7 @@ export default class TurnsController {
             
             const updatedParticipant = await participant.save()
 
-            const payload = await Participant.query(`select * from participants where id=${updatedParticipant.id}`)
+            const [payload] = await Participant.query(`select * from participants where id=${updatedParticipant.id}`)
 
             io.emit('UPDATE_PARTICIPANT', payload)
 

@@ -33,7 +33,8 @@ let SessionsController = class SessionsController {
         entity.timePerPiece = (entity.numberOfParticipants === undefined || entity.stimatedTime === undefined) ?
             0 : (entity.stimatedTime * 0.4) / (entity.numberOfParticipants * 5);
         const newSession = await entity_1.Session.create(entity).save();
-        return newSession;
+        const [payload] = await entity_1.Session.query(`select * from sessions where id=${newSession.id}`);
+        return payload;
     }
     async joinSession(sessionId) {
         const session = await entity_1.Session.findOne(sessionId);
@@ -49,7 +50,8 @@ let SessionsController = class SessionsController {
         const participant = await entity_1.Participant.create();
         participant.session = updatedSession;
         await participant.save();
-        index_1.io.emit('UPDATE_SESSION', updatedSession);
+        const [payload] = await entity_1.Session.query(`select * from sessions where id=${updatedSession.id}`);
+        index_1.io.emit('UPDATE_SESSION', payload);
         const newParticipant = await entity_1.Participant.query(`select * from participants where id=${participant.id}`);
         return newParticipant;
     }
@@ -58,9 +60,10 @@ let SessionsController = class SessionsController {
         if (!session)
             throw new routing_controllers_1.NotFoundError('Session not found!');
         session.status = 'finished';
-        const updatedSession = session.save();
-        index_1.io.emit('UPDATE_SESSION', updatedSession);
-        return updatedSession;
+        const updatedSession = await session.save();
+        const [payload] = await entity_1.Session.query(`select * from sessions where id=${updatedSession.id}`);
+        index_1.io.emit('UPDATE_SESSION', payload);
+        return payload;
     }
 };
 __decorate([

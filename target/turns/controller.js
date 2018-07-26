@@ -56,7 +56,8 @@ let TurnsController = class TurnsController {
             participant.numberOfPieces = Math.trunc(participant.timeSpeakingSeconds / session.timePerPiece);
         }
         const updatedParticipant = await participant.save();
-        index_1.io.emit('UPDATE_PARTICIPANT', updatedParticipant);
+        const [payload] = await entity_1.Participant.query(`select * from participants where id=${updatedParticipant.id}`);
+        index_1.io.emit('UPDATE_PARTICIPANT', payload);
         return newTurn;
     }
 };
