@@ -48,7 +48,7 @@ export default class TurnsController {
 
             participant.timeSpeakingSeconds = participant.timeSpeakingSeconds + timeSpoken
             if(participant.timeSpeakingSeconds > session.timePerPiece && participant.timeSpeakingSeconds <= 5*session.timePerPiece){
-                participant.numberOfPieces = Math.trunc(participant.timeSpeakingSeconds/session.timePerPiece)
+                participant.numberOfPieces = 5 - Math.trunc(participant.timeSpeakingSeconds/session.timePerPiece)
             }
             
             const updatedParticipant = await participant.save()
