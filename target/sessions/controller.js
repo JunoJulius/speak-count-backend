@@ -32,6 +32,7 @@ let SessionsController = class SessionsController {
         entity.qualityPieces = entity.numberOfParticipants === undefined ? 0 : entity.numberOfParticipants / 2;
         entity.timePerPiece = (entity.numberOfParticipants === undefined || entity.stimatedTime === undefined) ?
             0 : (entity.stimatedTime * 0.4) / (entity.numberOfParticipants * 5);
+        entity.piecesToComplete = entity.numberOfPieces + entity.qualityPieces;
         const newSession = await entity_1.Session.create(entity).save();
         const [payload] = await entity_1.Session.query(`select * from sessions where id=${newSession.id}`);
         return payload;
@@ -43,9 +44,6 @@ let SessionsController = class SessionsController {
         if (session.joinedParticipants === session.numberOfParticipants)
             throw new routing_controllers_1.ForbiddenError('The session is already full');
         session.joinedParticipants = session.joinedParticipants + 1;
-        if (session.joinedParticipants === session.numberOfParticipants) {
-            session.status = 'started';
-        }
         const updatedSession = await session.save();
         const participant = await entity_1.Participant.create();
         participant.session = updatedSession;
@@ -55,11 +53,11 @@ let SessionsController = class SessionsController {
         const newParticipant = await entity_1.Participant.query(`select * from participants where id=${participant.id}`);
         return newParticipant;
     }
-    async stopSession(id) {
+    async stopSession(id, status) {
         const session = await entity_1.Session.findOne(id);
         if (!session)
             throw new routing_controllers_1.NotFoundError('Session not found!');
-        session.status = 'finished';
+        session.status = status;
         const updatedSession = await session.save();
         const [payload] = await entity_1.Session.query(`select * from sessions where id=${updatedSession.id}`);
         index_1.io.emit('UPDATE_SESSION', payload);
@@ -98,8 +96,9 @@ __decorate([
     routing_controllers_1.HttpCode(200),
     routing_controllers_1.Put('/sessions/:id'),
     __param(0, routing_controllers_1.Param('id')),
+    __param(1, routing_controllers_1.BodyParam('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, String]),
     __metadata("design:returntype", Promise)
 ], SessionsController.prototype, "stopSession", null);
 SessionsController = __decorate([

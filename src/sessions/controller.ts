@@ -34,7 +34,7 @@ export default class SessionsController {
         entity.qualityPieces = entity.numberOfParticipants === undefined ? 0 : entity.numberOfParticipants / 2
         entity.timePerPiece = (entity.numberOfParticipants === undefined || entity.stimatedTime === undefined) ?
          0 : (entity.stimatedTime * 0.4) / (entity.numberOfParticipants * 5)
-        
+        entity.piecesToComplete = entity.numberOfPieces + entity.qualityPieces
         const newSession = await Session.create(entity).save()
         const [payload] =await Session.query(`select * from sessions where id=${newSession.id}`)
 
@@ -49,9 +49,9 @@ export default class SessionsController {
         if(!session) throw new NotFoundError('Session code is incorrect!')
         if(session.joinedParticipants === session.numberOfParticipants) throw new ForbiddenError('The session is already full')
         session.joinedParticipants = session.joinedParticipants + 1
-        if(session.joinedParticipants === session.numberOfParticipants) {
-            session.status = 'started'
-        }
+        // if(session.joinedParticipants === session.numberOfParticipants) {
+        //     session.status = 'started'
+        // }
         const updatedSession = await session.save()
 
 
@@ -73,12 +73,13 @@ export default class SessionsController {
     @HttpCode(200)
     @Put('/sessions/:id')
     async stopSession(
-        @Param('id') id: number
+        @Param('id') id: number,
+        @BodyParam('status') status: string
     ) {
 
         const session = await Session.findOne(id)
         if(!session) throw new NotFoundError('Session not found!')
-        session.status = 'finished'
+        session.status = status
         const updatedSession = await session.save()
 
         const [payload] = await Session.query(`select * from sessions where id=${updatedSession.id}`)

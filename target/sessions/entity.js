@@ -54,6 +54,10 @@ __decorate([
     __metadata("design:type", String)
 ], Session.prototype, "status", void 0);
 __decorate([
+    typeorm_1.Column({ nullable: true, default: 0 }),
+    __metadata("design:type", Number)
+], Session.prototype, "piecesToComplete", void 0);
+__decorate([
     typeorm_1.OneToMany(_ => Participant, participant => participant.session),
     __metadata("design:type", Array)
 ], Session.prototype, "participants", void 0);

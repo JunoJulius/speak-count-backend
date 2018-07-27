@@ -37,10 +37,12 @@ __decorate([
     __metadata("design:type", String)
 ], AuthenticatePayload.prototype, "endTime", void 0);
 let TurnsController = class TurnsController {
-    async createSession({ sessionId, participantId, startTime, endTime }) {
+    async createTurn({ sessionId, participantId, startTime, endTime }) {
         const session = await entity_1.Session.findOne(sessionId);
         if (!session)
             throw new routing_controllers_1.NotFoundError('Session not found');
+        if (session.status !== 'started')
+            throw new routing_controllers_1.ForbiddenError("the sessison hasn't started yet");
         const participant = await entity_1.Participant.findOne(participantId);
         if (!participant)
             throw new routing_controllers_1.NotFoundError('You are not part of this session');
@@ -58,6 +60,11 @@ let TurnsController = class TurnsController {
         const updatedParticipant = await participant.save();
         const [payload] = await entity_1.Participant.query(`select * from participants where id=${updatedParticipant.id}`);
         index_1.io.emit('UPDATE_PARTICIPANT', payload);
+        const [{ 'sum': sumpayload }] = await entity_1.Participant.query(`SELECT SUM(number_of_pieces) FROM participants where session_id=${session.id}`);
+        session.piecesToComplete = sumpayload;
+        await session.save();
+        const [updatedSession] = await entity_1.Session.query(`select * from sessions where id=${session.id}`);
+        index_1.io.emit('UPDATE_SESSION', updatedSession);
         return newTurn;
     }
 };
@@ -68,7 +75,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [AuthenticatePayload]),
     __metadata("design:returntype", Promise)
-], TurnsController.prototype, "createSession", null);
+], TurnsController.prototype, "createTurn", null);
 TurnsController = __decorate([
     routing_controllers_1.JsonController()
 ], TurnsController);

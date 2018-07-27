@@ -34,6 +34,8 @@ export class Session extends BaseEntity {
   @Column('text',{nullable: true, default: 'created'})
   status: string
 
+  @Column({nullable: true, default: 0})
+  piecesToComplete: number
 
   @OneToMany(_ => Participant, participant => participant.session)
   participants: Participant[]

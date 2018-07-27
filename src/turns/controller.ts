@@ -1,4 +1,4 @@
-import { JsonController, Post, HttpCode, Body, NotFoundError} from 'routing-controllers'
+import { JsonController, Post, HttpCode, Body, NotFoundError, ForbiddenError} from 'routing-controllers'
 import { Session, Participant } from '../sessions/entity'
 import Turn from './entity'
 import { IsNumber, IsDateString, IsOptional } from 'class-validator'
@@ -25,11 +25,12 @@ export default class TurnsController {
 
     @HttpCode(201)
     @Post('/turns')
-    async createSession(
+    async createTurn(
         @Body() { sessionId , participantId, startTime, endTime} : AuthenticatePayload
         ) {
             const session = await Session.findOne(sessionId)
             if(!session) throw new NotFoundError('Session not found')
+            if(session.status !== 'started') throw new ForbiddenError("the sessison hasn't started yet")
 
             const participant = await Participant.findOne(participantId)
             if(!participant) throw new NotFoundError('You are not part of this session')
@@ -56,6 +57,15 @@ export default class TurnsController {
             const [payload] = await Participant.query(`select * from participants where id=${updatedParticipant.id}`)
 
             io.emit('UPDATE_PARTICIPANT', payload)
+
+            const [{'sum': sumpayload}] = await Participant.query(`SELECT SUM(number_of_pieces) FROM participants where session_id=${session.id}`)
+
+            session.piecesToComplete = sumpayload
+            await session.save()
+
+            const [updatedSession] =await Session.query(`select * from sessions where id=${session.id}`)
+
+            io.emit( 'UPDATE_SESSION', updatedSession )
 
             
             return newTurn
